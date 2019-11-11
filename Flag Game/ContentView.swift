@@ -9,13 +9,70 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
+    @State private var correctAnswer = Int.random(in: 0...2)
+    @State private var showingScore = false
+    @State private var alertMessage = ""
+    @State private var scoreTitle = NSAttributedString(string: "")
+    @State private var usersScore = 0
     var body: some View {
-        Text("Hello World")
+        ZStack {
+            LinearGradient(gradient: Gradient(colors: [.blue, .black]), startPoint: .top, endPoint: .bottom)
+            .edgesIgnoringSafeArea(.all)
+            VStack(spacing: 30) {
+                VStack {
+                    Text("Tap the flag of")
+                        .foregroundColor(.white)
+                    Text(countries[correctAnswer])
+                        .font(.largeTitle)
+                        .fontWeight(.semibold)
+                }
+                ForEach(0 ..< 3) { number in
+                    Button(action: {
+                        self.flagTapped(number)
+                    }) {
+                        Image(self.countries[number])
+                            .renderingMode(.original)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(Color.black, lineWidth: 1))
+//                            .shadow(color: .black, radius: 2)
+                    }
+                }
+                Text("Your score is \(usersScore)")
+                    .foregroundColor(.white)
+                Spacer()
+            }
+        }
+        .alert(isPresented: $showingScore) {
+            Alert(title: Text(scoreTitle.string), message: Text(alertMessage), dismissButton: .default(Text("Continue")) {
+                self.askQuestion()
+            })
+        }
+
+    }
+    func askQuestion() {
+        countries.shuffle()
+        correctAnswer = Int.random(in: 0...2)
+    }
+    
+    func flagTapped(_ number: Int) {
+        if correctAnswer == number {
+            scoreTitle = NSAttributedString(string: "Correct!", attributes: [.foregroundColor: UIColor.green])
+            usersScore += 1
+            alertMessage = "Your score is \(usersScore)"
+        } else {
+            scoreTitle = NSAttributedString(string: "Wrong!", attributes: [.foregroundColor: UIColor.red])
+            usersScore -= 1
+            alertMessage = "That’s the flag of \(countries[number])"
+        }
+          showingScore = true
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+        .previewDevice(PreviewDevice(rawValue: "iPhone 11 Pro"))
+        .previewDisplayName("iPhone 11 Pro")
     }
 }
