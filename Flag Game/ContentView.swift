@@ -22,23 +22,21 @@ struct ContentView: View {
             VStack(spacing: 30) {
                 VStack {
                     Text("Tap the flag of")
+                         .titleStyle()
                         .foregroundColor(.white)
                     Text(countries[correctAnswer])
+                        .foregroundColor(.black)
                         .font(.largeTitle)
-                        .fontWeight(.semibold)
                 }
                 ForEach(0 ..< 3) { number in
                     Button(action: {
                         self.flagTapped(number)
                     }) {
-                        Image(self.countries[number])
-                            .renderingMode(.original)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(Color.black, lineWidth: 1))
-//                            .shadow(color: .black, radius: 2)
+                        FlagImage(imageNamed: self.countries[number])
                     }
                 }
                 Text("Your score is \(usersScore)")
+                     .titleStyle()
                     .foregroundColor(.white)
                 Spacer()
             }
@@ -68,6 +66,32 @@ struct ContentView: View {
           showingScore = true
     }
 }
+struct FlagImage: View {
+    var imageNamed: String
+    var body: some View {
+        
+    Image(imageNamed)
+        .renderingMode(.original)
+        .clipShape(Capsule())
+        .overlay(Capsule().stroke(Color.black, lineWidth: 1))
+                                .shadow(color: .black, radius: 2)
+    }
+    
+}
+struct Title: ViewModifier {
+    func body (content: Content) -> some View {
+        content
+            .font(.largeTitle)
+            .foregroundColor(.white)
+    }
+}
+extension View {
+    func titleStyle() -> some View {
+        self.modifier(Title())
+    }
+}
+
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
